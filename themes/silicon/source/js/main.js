@@ -1,0 +1,85 @@
+(function () {
+  var navToggle = document.querySelector('.nav-toggle');
+  var nav = document.querySelector('.site-nav');
+  if (navToggle && nav) {
+    navToggle.addEventListener('click', function () {
+      var open = nav.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
+  }
+
+  var topButton = document.querySelector('.back-to-top');
+  if (topButton) {
+    window.addEventListener('scroll', function () {
+      topButton.classList.toggle('is-visible', window.scrollY > 420);
+    });
+    topButton.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var button = document.createElement('button');
+    button.className = 'copy-code';
+    button.type = 'button';
+    button.textContent = 'Copy';
+    button.addEventListener('click', function () {
+      var code = pre.querySelector('code');
+      var text = code ? code.innerText : pre.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        button.textContent = 'Copied';
+        setTimeout(function () {
+          button.textContent = 'Copy';
+        }, 1500);
+      });
+    });
+    pre.appendChild(button);
+  });
+
+  var input = document.getElementById('site-search');
+  var results = document.getElementById('search-results');
+  var cache = null;
+
+  function parseSearchXml(xmlText) {
+    var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+    return Array.prototype.map.call(doc.querySelectorAll('entry'), function (entry) {
+      return {
+        title: (entry.querySelector('title') || {}).textContent || '',
+        url: (entry.querySelector('url') || {}).textContent || '',
+        content: (entry.querySelector('content') || {}).textContent || ''
+      };
+    });
+  }
+
+  function renderResults(query) {
+    if (!results || !cache) return;
+    var q = query.trim().toLowerCase();
+    if (!q) {
+      results.innerHTML = '';
+      results.classList.remove('is-open');
+      return;
+    }
+    var matches = cache.filter(function (item) {
+      return (item.title + ' ' + item.content).toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 8);
+    results.innerHTML = matches.length ? matches.map(function (item) {
+      return '<a href="' + item.url + '"><strong>' + item.title + '</strong><span>' + item.content.replace(/<[^>]+>/g, '').slice(0, 80) + '</span></a>';
+    }).join('') : '<p>没有找到相关文章</p>';
+    results.classList.add('is-open');
+  }
+
+  if (input && results && window.SILICON_BLOG) {
+    fetch(window.SILICON_BLOG.searchPath)
+      .then(function (response) { return response.text(); })
+      .then(function (text) { cache = parseSearchXml(text); })
+      .catch(function () { cache = []; });
+    input.addEventListener('input', function () {
+      renderResults(input.value);
+    });
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest('.search-bar')) {
+        results.classList.remove('is-open');
+      }
+    });
+  }
+}());

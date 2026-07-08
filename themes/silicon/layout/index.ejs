@@ -1,0 +1,66 @@
+<%
+  const home = site.data.home || {};
+  const hero = home.hero || {};
+  const panel = home.panel || {};
+  const sections = home.sections || {};
+  const featuredCategories = home.featured_categories || theme.featured_categories || [];
+  const quickLinks = home.quick_links || [];
+  const heroButtons = hero.buttons || [];
+  const linkUrl = function(target) {
+    if (!target) return url_for('/');
+    return /^(https?:)?\/\//.test(target) ? target : url_for(target);
+  };
+%>
+
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow"><%= hero.eyebrow || 'Microelectronics · AI · Physics · Life' %></p>
+    <h1><%= hero.title || config.title %></h1>
+    <p class="hero-text"><%= hero.intro || config.description %></p>
+    <div class="hero-actions">
+      <% heroButtons.forEach(function(button) { %>
+        <a class="button<%= button.primary ? ' primary' : '' %>" href="<%- linkUrl(button.url) %>"><%= button.text %></a>
+      <% }) %>
+    </div>
+  </div>
+  <div class="hero-panel">
+    <span><%= panel.label || 'Learning Notes' %></span>
+    <strong><%= panel.title || 'Semiconductors, Vision, Algorithms' %></strong>
+    <p><%= panel.text || '把知识、项目和成长轨迹放在一个长期可维护的地方。' %></p>
+  </div>
+</section>
+
+<section class="section-grid">
+  <div class="section-main">
+    <div class="section-heading">
+      <h2><%= sections.recent_title || '最近文章' %></h2>
+      <a href="<%- url_for('/archives/') %>"><%= sections.archive_link || '全部归档' %></a>
+    </div>
+    <div class="post-list">
+      <% site.posts.sort('date', -1).limit(sections.recent_limit || 6).forEach(function(post) { %>
+        <article class="post-item">
+          <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+          <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
+          <% if (post.excerpt) { %><p><%- strip_html(post.excerpt).substring(0, 120) %></p><% } %>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+  <aside class="section-side">
+    <h2><%= sections.featured_title || '精选分类' %></h2>
+    <div class="category-cloud">
+      <% featuredCategories.forEach(function(name) { %>
+        <a href="<%- url_for('/categories/' + name + '/') %>"><%= name %></a>
+      <% }) %>
+    </div>
+  </aside>
+</section>
+
+<section class="quick-links">
+  <% quickLinks.forEach(function(item) { %>
+    <a href="<%- linkUrl(item.url) %>">
+      <span><%= item.label %></span>
+      <strong><%= item.text %></strong>
+    </a>
+  <% }) %>
+</section>

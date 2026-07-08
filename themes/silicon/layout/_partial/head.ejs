@@ -1,0 +1,8 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="<%= config.description %>">
+  <title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
+  <link rel="alternate" type="application/atom+xml" title="<%= config.title %>" href="<%- url_for('/atom.xml') %>">
+  <%- css('css/style.css') %>
+</head>

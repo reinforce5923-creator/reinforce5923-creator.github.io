@@ -1,0 +1,13 @@
+<section class="page">
+  <header class="page-header">
+    <h1>标签：<%= page.tag %></h1>
+  </header>
+  <div class="post-list">
+    <% page.posts.sort('date', -1).forEach(function(post) { %>
+      <article class="post-item compact">
+        <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+        <h2><a href="<%- url_for(post.path) %>"><%= post.title %></a></h2>
+      </article>
+    <% }) %>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+menu:
+  Home: /
+  Notes: /notes/
+  Microelectronics: /microelectronics/
+  Projects: /projects/
+  Life: /life/
+  Archive: /archives/
+  About: /about/
+
+github: https://github.com/yifankong823-creator
+email:
+rss: /atom.xml
+
+featured_categories:
+  - 大学物理
+  - 电路基础
+  - 高等数学
+  - 人工智能
+  - 计算机视觉
+  - 算法
+  - 微电子
+  - 半导体器件
+  - 神经形态器件
+  - 编程

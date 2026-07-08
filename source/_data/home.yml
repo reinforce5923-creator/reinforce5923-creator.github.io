@@ -1,0 +1,55 @@
+# 新手改首页，只改这个文件就行。
+# 冒号后面的文字可以改，注意冒号后面要有一个空格。
+# 如果文字里有特殊符号，建议像下面一样用英文双引号包起来。
+
+hero:
+  eyebrow: "Microelectronics · AI · Physics · Life"
+  title: "Silicon & Thoughts"
+  intro: "我是孔一凡，山东大学微电子科学与工程专业学生。这里记录微电子、人工智能、计算机视觉、数学、物理、编程学习与项目实践。"
+  buttons:
+    - text: "了解我"
+      url: "/about/"
+      primary: true
+    - text: "查看项目"
+      url: "/projects/"
+      primary: false
+    - text: "GitHub"
+      url: "https://github.com/"
+      primary: false
+
+panel:
+  label: "Learning Notes"
+  title: "Semiconductors, Vision, Algorithms"
+  text: "把知识、项目和成长轨迹放在一个长期可维护的地方。"
+
+sections:
+  recent_title: "最近文章"
+  archive_link: "全部归档"
+  featured_title: "精选分类"
+  recent_limit: 6
+
+featured_categories:
+  - "大学物理"
+  - "电路基础"
+  - "高等数学"
+  - "人工智能"
+  - "计算机视觉"
+  - "算法"
+  - "微电子"
+  - "半导体器件"
+  - "神经形态器件"
+  - "编程"
+
+quick_links:
+  - label: "Notes"
+    text: "课程、数学、物理、算法和编程笔记"
+    url: "/notes/"
+  - label: "Microelectronics"
+    text: "半导体器件、神经形态器件与芯片学习"
+    url: "/microelectronics/"
+  - label: "Projects"
+    text: "大创、科研训练、编程与自主避障项目"
+    url: "/projects/"
+  - label: "Life"
+    text: "大学生活、复盘、阶段总结与个人思考"
+    url: "/life/"

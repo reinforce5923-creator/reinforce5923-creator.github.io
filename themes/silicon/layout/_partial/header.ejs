@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="<%- url_for('/') %>" aria-label="<%= config.title %>">
+      <span class="brand-title"><%= config.title %></span>
+      <span class="brand-subtitle"><%= config.subtitle %></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="打开导航" aria-expanded="false">☰</button>
+    <nav class="site-nav" aria-label="主导航">
+      <% Object.keys(theme.menu || {}).forEach(function(name) { %>
+        <a href="<%- url_for(theme.menu[name]) %>"><%= name %></a>
+      <% }) %>
+    </nav>
+  </div>
+  <div class="search-bar">
+    <label class="search-label" for="site-search">Search</label>
+    <input id="site-search" type="search" placeholder="搜索文章、标签或关键词" autocomplete="off">
+    <div id="search-results" class="search-results" aria-live="polite"></div>
+  </div>
+</header>

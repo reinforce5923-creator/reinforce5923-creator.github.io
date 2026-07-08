@@ -1,0 +1,74 @@
+name: Deploy Hexo site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Hexo URL for GitHub Pages
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const repoFull = process.env.GITHUB_REPOSITORY || '';
+          const [owner, repo] = repoFull.split('/');
+          const isUserSite = repo && owner && repo.toLowerCase() === `${owner.toLowerCase()}.github.io`;
+          const root = isUserSite ? '/' : `/${repo}/`;
+          const url = isUserSite ? `https://${repo}` : `https://${owner}.github.io/${repo}`;
+          const configPath = '_config.yml';
+          let config = fs.readFileSync(configPath, 'utf8');
+          config = config.replace(/^url:.*$/m, `url: ${url}`);
+          config = config.replace(/^root:.*$/m, `root: ${root}`);
+          fs.writeFileSync(configPath, config);
+          console.log(`Configured Hexo url=${url}, root=${root}`);
+          NODE
+
+      - name: Build with Hexo
+        run: |
+          npx hexo clean
+          npx hexo generate
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
