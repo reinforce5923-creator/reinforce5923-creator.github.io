@@ -5,7 +5,7 @@
 hero:
   eyebrow: "Microelectronics · AI · Physics · Life"
   title: "Silicon & Thoughts"
-  intro: "我是孔一凡，山东大学微电子科学与工程专业学生。这里记录微电子、人工智能、计算机视觉、数学、物理、编程学习与项目实践。"
+  intro: "我是孔一凡，山东大学微电子科学与工程专业学生。这里记录我在大学期间的学习经验以及少量生活牢骚。"
   buttons:
     - text: "了解我"
       url: "/about/"
@@ -29,27 +29,20 @@ sections:
   recent_limit: 6
 
 featured_categories:
-  - "大学物理"
+  - "大一的各项基础课程"
   - "电路基础"
-  - "高等数学"
-  - "人工智能"
-  - "计算机视觉"
-  - "算法"
-  - "微电子"
-  - "半导体器件"
-  - "神经形态器件"
-  - "编程"
+
 
 quick_links:
   - label: "Notes"
-    text: "课程、数学、物理、算法和编程笔记"
+    text: "sdu课程笔记/重点"
     url: "/notes/"
   - label: "Microelectronics"
-    text: "半导体器件、神经形态器件与芯片学习"
+    text: "综测/学习生活"
     url: "/microelectronics/"
   - label: "Projects"
-    text: "大创、科研训练、编程与自主避障项目"
+    text: "创新科研竞赛"
     url: "/projects/"
   - label: "Life"
-    text: "大学生活、复盘、阶段总结与个人思考"
+    text: "个人思考与一些好玩的"
     url: "/life/"
