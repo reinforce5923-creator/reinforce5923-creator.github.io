@@ -1,14 +1,17 @@
 <article class="article">
   <header class="article-header">
-    <p class="article-meta">
-      <time datetime="<%= date_xml(page.date) %>"><%= date(page.date, 'YYYY-MM-DD') %></time>
-      <% if (page.categories && page.categories.length) { %>
-        <span>/</span>
-        <% page.categories.forEach(function(cat, i) { %>
-          <a href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
-        <% }) %>
-      <% } %>
-    </p>
+    <div class="article-topline">
+      <p class="article-meta">
+        <time datetime="<%= date_xml(page.date) %>"><%= date(page.date, 'YYYY-MM-DD') %></time>
+        <% if (page.categories && page.categories.length) { %>
+          <span>/</span>
+          <% page.categories.forEach(function(cat, i) { %>
+            <a href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
+          <% }) %>
+        <% } %>
+      </p>
+      <p id="busuanzi_container_page_pv" class="article-views">点击量 <span id="busuanzi_value_page_pv">--</span></p>
+    </div>
     <h1><%= page.title %></h1>
     <% if (page.tags && page.tags.length) { %>
       <div class="tag-row">
@@ -32,3 +35,4 @@
     <% if (page.next) { %><a href="<%- url_for(page.next.path) %>">下一篇：<%= page.next.title %></a><% } %>
   </nav>
 </article>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

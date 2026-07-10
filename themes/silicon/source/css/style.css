@@ -387,12 +387,27 @@ img {
   letter-spacing: 0;
 }
 
+.article-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
 .article-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 0;
   color: var(--muted);
+}
+
+.article-views {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .tag-row {
@@ -664,6 +679,10 @@ mjx-container[jax="SVG"] {
 
   .post-item.compact {
     gap: 4px;
+  }
+
+  .article-topline {
+    align-items: flex-start;
   }
 
   .article-content {
