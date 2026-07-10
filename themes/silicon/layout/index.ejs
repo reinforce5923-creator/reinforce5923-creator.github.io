@@ -41,7 +41,7 @@
         <article class="post-item">
           <div class="post-card-meta">
             <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
-            <span class="post-card-views">点击量 --</span>
+            <span class="post-card-views">点击量 <span data-post-view-counter data-counter-path="<%- url_for(post.path) %>">--</span></span>
           </div>
           <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
           <% if (post.excerpt) { %><p><%- strip_html(post.excerpt).substring(0, 120) %></p><% } %>

@@ -18,6 +18,70 @@
     });
   }
 
+  var counterNamespace = 'reinforce5923-creator-github-io';
+  var counterCache = {};
+
+  function counterKey(path) {
+    var clean = (path || window.location.pathname || '')
+      .replace(/^https?:\/\/[^/]+/i, '')
+      .split('#')[0]
+      .split('?')[0]
+      .replace(/^\/+|\/+$/g, '') || 'home';
+    var hash = 2166136261;
+    for (var i = 0; i < clean.length; i += 1) {
+      hash ^= clean.charCodeAt(i);
+      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    }
+    return 'post-' + (hash >>> 0).toString(16);
+  }
+
+  function counterUrl(action, key) {
+    var base = 'https://api.counterapi.dev/v1/' + counterNamespace + '/' + key;
+    return action === 'up' ? base + '/up' : base + '/';
+  }
+
+  function requestCounter(action, key) {
+    return fetch(counterUrl(action, key), { cache: 'no-store' }).then(function (response) {
+      if (!response.ok) {
+        if (action === 'get' && (response.status === 400 || response.status === 404)) {
+          return { count: 0 };
+        }
+        throw new Error('Counter request failed');
+      }
+      return response.json();
+    });
+  }
+
+  function setCounterText(element, value) {
+    var count = Number(value);
+    element.textContent = Number.isFinite(count) && count >= 0 ? String(count) : '0';
+  }
+
+  function loadPostCounter(element) {
+    var key = counterKey(element.getAttribute('data-counter-path'));
+    if (!counterCache[key]) {
+      counterCache[key] = requestCounter('get', key).catch(function () {
+        return { count: 0 };
+      });
+    }
+    counterCache[key].then(function (data) {
+      setCounterText(element, data.count);
+    });
+  }
+
+  document.querySelectorAll('[data-post-view-counter]').forEach(loadPostCounter);
+
+  var pageCounter = document.querySelector('[data-page-view-counter]');
+  if (pageCounter) {
+    requestCounter('up', counterKey(pageCounter.getAttribute('data-counter-path')))
+      .then(function (data) {
+        setCounterText(pageCounter, data.count);
+      })
+      .catch(function () {
+        setCounterText(pageCounter, 0);
+      });
+  }
+
   document.querySelectorAll('pre').forEach(function (pre) {
     var button = document.createElement('button');
     button.className = 'copy-code';

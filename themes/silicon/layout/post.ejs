@@ -10,7 +10,7 @@
           <% }) %>
         <% } %>
       </p>
-      <p class="article-views">点击量 <span id="busuanzi_value_page_pv">--</span></p>
+      <p class="article-views">点击量 <span data-page-view-counter data-counter-path="<%- url_for(page.path) %>">--</span></p>
     </div>
     <h1><%= page.title %></h1>
     <% if (page.tags && page.tags.length) { %>
@@ -35,4 +35,3 @@
     <% if (page.next) { %><a href="<%- url_for(page.next.path) %>">下一篇：<%= page.next.title %></a><% } %>
   </nav>
 </article>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
