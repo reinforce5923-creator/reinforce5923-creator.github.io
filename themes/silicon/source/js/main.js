@@ -20,7 +20,7 @@
 
   var counterNamespace = 'reinforce5923-creator-github-io';
   var counterCache = {};
-  var viewCounter = window.Counter ? new window.Counter({ workspace: counterNamespace }) : null;
+  var viewCounter = window.Counter ? new window.Counter({ version: 'v1', namespace: counterNamespace }) : null;
 
   function counterKey(path) {
     var clean = (path || window.location.pathname || '')
