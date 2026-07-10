@@ -5,7 +5,7 @@
 hero:
   eyebrow: "Microelectronics · AI · Physics · Life"
   title: "Silicon & Thoughts"
-  intro: "我是孔一凡，山东大学微电子科学与工程专业学生。这里记录我在大学期间的学习经验以及少量生活牢骚。"
+  intro: "我是强化加第五，山东大学微电子科学与工程专业学生。这里记录我在大学期间的学习经验以及少量生活牢骚。"
   buttons:
     - text: "了解我"
       url: "/about/"

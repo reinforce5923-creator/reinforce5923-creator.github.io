@@ -435,6 +435,18 @@ img {
   font-size: 1.02rem;
 }
 
+.page-posts {
+  margin-top: 42px;
+}
+
+.page-posts h2 {
+  margin: 0 0 16px;
+}
+
+.empty-state {
+  color: var(--muted);
+}
+
 .article-content h2,
 .article-content h3,
 .article-content h4 {

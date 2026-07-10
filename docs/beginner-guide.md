@@ -16,7 +16,7 @@ source/_data/home.yml
 
 ```yml
 title: "Silicon & Thoughts"
-intro: "我是孔一凡，山东大学微电子科学与工程专业学生。这里记录..."
+intro: "我是强化加第五，山东大学微电子科学与工程专业学生。这里记录..."
 ```
 
 按钮也在这个文件里：

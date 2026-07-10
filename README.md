@@ -1,6 +1,6 @@
 # Silicon & Thoughts
 
-这是孔一凡的个人技术博客项目，基于 Hexo、Node.js、npm、Git、GitHub Pages 和 GitHub Actions 构建。
+这是强化加第五的个人技术博客项目，基于 Hexo、Node.js、npm、Git、GitHub Pages 和 GitHub Actions 构建。
 
 博客定位为大学生个人技术博客，同时作为学习笔记库、项目记录、技术作品集和长期成长档案。主要内容包括微电子、半导体器件、神经形态器件、人工智能、计算机视觉、算法、大学物理、电路基础、高等数学、编程学习、项目记录、大学生活与个人思考。
 
