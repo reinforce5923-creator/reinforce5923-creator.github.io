@@ -7,5 +7,5 @@
   3. Commit the relevant source changes with a concise message.
   4. Push `main` to `origin`.
   5. Wait for the GitHub Pages workflow to finish.
-  6. Verify the live site at `https://yifankong823-creator.github.io/` contains the updated content.
+  6. Verify the live site at `https://reinforce5923-creator.github.io/` contains the updated content.
 - Do not assume the site is updated immediately after `git push`; confirm the GitHub Actions deploy job has completed and then re-check the live page.

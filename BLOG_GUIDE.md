@@ -3,7 +3,7 @@
 ## 我的博客网址
 
 ```text
-https://yifankong823-creator.github.io/
+https://reinforce5923-creator.github.io/
 ```
 
 发布成功后，任何人都可以用这个网址访问你的博客。
@@ -13,7 +13,7 @@ https://yifankong823-creator.github.io/
 直接打开浏览器，访问：
 
 ```text
-https://yifankong823-creator.github.io/
+https://reinforce5923-creator.github.io/
 ```
 
 ## 怎么在本地预览
@@ -98,7 +98,7 @@ GitHub Actions 会自动构建并更新网站。
 1. 打开 GitHub 仓库：
 
 ```text
-https://github.com/yifankong823-creator/yifankong823-creator.github.io
+https://github.com/reinforce5923-creator/reinforce5923-creator.github.io
 ```
 
 2. 点击页面上方的 `Actions`。
@@ -109,7 +109,7 @@ https://github.com/yifankong823-creator/yifankong823-creator.github.io
 如果工作流成功，再打开博客网址检查：
 
 ```text
-https://yifankong823-creator.github.io/
+https://reinforce5923-creator.github.io/
 ```
 
 ## 最常见的问题
@@ -129,7 +129,7 @@ git push
 通常是网站地址或路径配置不对。这个项目当前已经配置为：
 
 ```text
-https://yifankong823-creator.github.io/
+https://reinforce5923-creator.github.io/
 ```
 
 如果以后换仓库名或自定义域名，需要重新检查 `_config.yml` 里的 `url` 和 `root`。
