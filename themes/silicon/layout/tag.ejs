@@ -6,6 +6,7 @@
     <% page.posts.sort('date', -1).forEach(function(post) { %>
       <article class="post-item compact">
         <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+        <span class="post-card-views">点击量 --</span>
         <h2><a href="<%- url_for(post.path) %>"><%= post.title %></a></h2>
       </article>
     <% }) %>

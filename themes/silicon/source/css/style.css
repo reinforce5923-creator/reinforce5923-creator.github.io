@@ -281,7 +281,9 @@ img {
 }
 
 .post-item {
+  position: relative;
   padding: 18px;
+  padding-right: 112px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -297,6 +299,16 @@ img {
 .post-item time {
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.post-card-views {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  white-space: nowrap;
 }
 
 .post-item h2,
@@ -679,6 +691,16 @@ mjx-container[jax="SVG"] {
 
   .post-item.compact {
     gap: 4px;
+  }
+
+  .post-item {
+    padding-right: 18px;
+  }
+
+  .post-card-views {
+    position: static;
+    display: block;
+    margin-top: 2px;
   }
 
   .article-topline {
