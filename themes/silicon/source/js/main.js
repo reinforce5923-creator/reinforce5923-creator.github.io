@@ -20,6 +20,7 @@
 
   var counterNamespace = 'reinforce5923-creator-github-io';
   var counterCache = {};
+  var viewCounter = window.Counter ? new window.Counter({ workspace: counterNamespace }) : null;
 
   function counterKey(path) {
     var clean = (path || window.location.pathname || '')
@@ -35,20 +36,12 @@
     return 'post-' + (hash >>> 0).toString(16);
   }
 
-  function counterUrl(action, key) {
-    var base = 'https://api.counterapi.dev/v1/' + counterNamespace + '/' + key;
-    return action === 'up' ? base + '/up' : base + '/';
-  }
-
   function requestCounter(action, key) {
-    return fetch(counterUrl(action, key), { cache: 'no-store' }).then(function (response) {
-      if (!response.ok) {
-        if (action === 'get' && (response.status === 400 || response.status === 404)) {
-          return { count: 0 };
-        }
-        throw new Error('Counter request failed');
-      }
-      return response.json();
+    if (!viewCounter || typeof viewCounter[action] !== 'function') {
+      return Promise.resolve({ count: 0 });
+    }
+    return viewCounter[action](key).then(function (data) {
+      return { count: data.value || data.count || 0 };
     });
   }
 
