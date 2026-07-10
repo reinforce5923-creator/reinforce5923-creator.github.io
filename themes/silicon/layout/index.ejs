@@ -39,8 +39,10 @@
     <div class="post-list">
       <% site.posts.sort('date', -1).limit(sections.recent_limit || 6).forEach(function(post) { %>
         <article class="post-item">
-          <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
-          <span class="post-card-views">点击量 --</span>
+          <div class="post-card-meta">
+            <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+            <span class="post-card-views">点击量 --</span>
+          </div>
           <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
           <% if (post.excerpt) { %><p><%- strip_html(post.excerpt).substring(0, 120) %></p><% } %>
         </article>

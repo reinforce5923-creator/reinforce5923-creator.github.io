@@ -25,8 +25,10 @@
         <div class="post-list">
           <% categoryPosts.forEach(function(post) { %>
             <article class="post-item compact">
-              <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
-              <span class="post-card-views">点击量 --</span>
+              <div class="post-card-meta">
+                <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+                <span class="post-card-views">点击量 --</span>
+              </div>
               <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
             </article>
           <% }) %>
