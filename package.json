@@ -10,7 +10,8 @@
     "clean": "hexo clean",
     "build": "hexo clean && hexo generate",
     "server": "hexo server",
-    "new": "hexo new post"
+    "new": "hexo new post",
+    "publish-blog": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-blog.ps1"
   },
   "hexo": {
     "version": "7.3.0"
