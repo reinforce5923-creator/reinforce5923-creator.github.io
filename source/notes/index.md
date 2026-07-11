@@ -9,8 +9,7 @@ date: 2026-07-07 21:31:00
 
 - [大学物理](/categories/大学物理/)
 - [电路基础](/categories/电路基础/)
-- [高等数学](/categories/高等数学/)
+- [线性代数](/categories/线性代数/)
 - [人工智能](/categories/人工智能/)
-
 
 
