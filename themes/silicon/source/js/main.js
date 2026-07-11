@@ -20,7 +20,6 @@
 
   var counterNamespace = 'reinforce5923-creator-github-io';
   var counterCache = {};
-  var viewCounter = window.Counter ? new window.Counter({ version: 'v1', namespace: counterNamespace }) : null;
 
   function counterKey(path) {
     var clean = (path || window.location.pathname || '')
@@ -37,11 +36,16 @@
   }
 
   function requestCounter(action, key) {
-    if (!viewCounter || typeof viewCounter[action] !== 'function') {
-      return Promise.resolve({ count: 0 });
-    }
-    return viewCounter[action](key).then(function (data) {
-      return { count: data.value || data.count || 0 };
+    var base = 'https://api.counterapi.dev/v1/' + encodeURIComponent(counterNamespace) + '/' + encodeURIComponent(key);
+    var url = action === 'up' ? base + '/up' : base + '/';
+    return fetch(url, { cache: 'no-store' }).then(function (response) {
+      if (!response.ok) {
+        if (action === 'get' && response.status === 404) {
+          return { count: 0 };
+        }
+        throw new Error('Counter request failed with status ' + response.status);
+      }
+      return response.json();
     });
   }
 
@@ -53,12 +57,12 @@
   function loadPostCounter(element) {
     var key = counterKey(element.getAttribute('data-counter-path'));
     if (!counterCache[key]) {
-      counterCache[key] = requestCounter('get', key).catch(function () {
-        return { count: 0 };
-      });
+      counterCache[key] = requestCounter('get', key);
     }
     counterCache[key].then(function (data) {
       setCounterText(element, data.count);
+    }).catch(function () {
+      element.textContent = '--';
     });
   }
 
@@ -71,7 +75,7 @@
         setCounterText(pageCounter, data.count);
       })
       .catch(function () {
-        setCounterText(pageCounter, 0);
+        pageCounter.textContent = '--';
       });
   }
 
