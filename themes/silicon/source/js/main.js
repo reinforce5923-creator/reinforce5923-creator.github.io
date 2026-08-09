@@ -18,7 +18,7 @@
     });
   }
 
-  var counterNamespace = 'reinforce5923-creator-github-io';
+  var counterNamespace = 'reinforce5923-creator.github.io';
   var counterCache = {};
 
   function counterKey(path) {
@@ -36,16 +36,15 @@
   }
 
   function requestCounter(action, key) {
-    var base = 'https://api.counterapi.dev/v1/' + encodeURIComponent(counterNamespace) + '/' + encodeURIComponent(key);
-    var url = action === 'up' ? base + '/up' : base + '/';
+    var base = 'https://counterapi.com/api/' + encodeURIComponent(counterNamespace) + '/view/' + encodeURIComponent(key);
+    var url = action === 'up' ? base : base + '?readOnly=true';
     return fetch(url, { cache: 'no-store' }).then(function (response) {
       if (!response.ok) {
-        if (action === 'get' && response.status === 404) {
-          return { count: 0 };
-        }
         throw new Error('Counter request failed with status ' + response.status);
       }
       return response.json();
+    }).then(function (data) {
+      return { count: data.value != null ? data.value : (data.count || 0) };
     });
   }
 
@@ -62,7 +61,7 @@
     counterCache[key].then(function (data) {
       setCounterText(element, data.count);
     }).catch(function () {
-      element.textContent = '--';
+      setCounterText(element, 0);
     });
   }
 
@@ -98,7 +97,7 @@
         setCounterText(pageCounter, data.count);
       })
       .catch(function () {
-        pageCounter.textContent = '--';
+        setCounterText(pageCounter, 0);
       });
   }
 
