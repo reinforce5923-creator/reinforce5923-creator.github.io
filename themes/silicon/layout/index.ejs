@@ -6,10 +6,37 @@
   const featuredCategories = home.featured_categories || theme.featured_categories || [];
   const quickLinks = home.quick_links || [];
   const heroButtons = hero.buttons || [];
+  const currentPage = page.current || 1;
+  const totalPages = page.total || 1;
+  const paginationItems = [];
   const linkUrl = function(target) {
     if (!target) return url_for('/');
     return /^(https?:)?\/\//.test(target) ? target : url_for(target);
   };
+  const pageLink = function(pageNumber) {
+    if (pageNumber <= 1) return url_for('/');
+    return url_for('/' + (config.pagination_dir || 'page') + '/' + pageNumber + '/');
+  };
+
+  if (totalPages <= 7) {
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
+      paginationItems.push(pageNumber);
+    }
+  } else {
+    let rangeStart = Math.max(2, currentPage - 2);
+    let rangeEnd = Math.min(totalPages - 1, currentPage + 2);
+
+    if (currentPage <= 4) rangeEnd = Math.min(6, totalPages - 1);
+    if (currentPage >= totalPages - 3) rangeStart = Math.max(2, totalPages - 5);
+
+    paginationItems.push(1);
+    if (rangeStart > 2) paginationItems.push('ellipsis-start');
+    for (let pageNumber = rangeStart; pageNumber <= rangeEnd; pageNumber += 1) {
+      paginationItems.push(pageNumber);
+    }
+    if (rangeEnd < totalPages - 1) paginationItems.push('ellipsis-end');
+    paginationItems.push(totalPages);
+  }
 %>
 
 <section class="hero">
@@ -37,7 +64,7 @@
       <a href="<%- url_for('/archives/') %>"><%= sections.archive_link || '全部归档' %></a>
     </div>
     <div class="post-list">
-      <% site.posts.sort('date', -1).limit(sections.recent_limit || 6).forEach(function(post) { %>
+      <% page.posts.forEach(function(post) { %>
         <article class="post-item">
           <div class="post-card-meta">
             <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
@@ -48,6 +75,44 @@
         </article>
       <% }) %>
     </div>
+    <% if (totalPages > 1) { %>
+      <nav class="pagination" aria-label="文章分页">
+        <% if (currentPage > 1) { %>
+          <a class="pagination-button pagination-direction" href="<%- pageLink(currentPage - 1) %>" rel="prev">上页</a>
+        <% } else { %>
+          <span class="pagination-button pagination-direction is-disabled" aria-disabled="true">上页</span>
+        <% } %>
+
+        <div class="pagination-pages">
+          <% paginationItems.forEach(function(item) { %>
+            <% if (typeof item === 'number') { %>
+              <% if (item === currentPage) { %>
+                <span class="pagination-button is-current" aria-current="page"><%= item %></span>
+              <% } else { %>
+                <a class="pagination-button" href="<%- pageLink(item) %>" aria-label="第 <%= item %> 页"><%= item %></a>
+              <% } %>
+            <% } else { %>
+              <span class="pagination-ellipsis" aria-hidden="true">…</span>
+            <% } %>
+          <% }) %>
+        </div>
+
+        <% if (currentPage < totalPages) { %>
+          <a class="pagination-button pagination-direction" href="<%- pageLink(currentPage + 1) %>" rel="next">下页</a>
+        <% } else { %>
+          <span class="pagination-button pagination-direction is-disabled" aria-disabled="true">下页</span>
+        <% } %>
+
+        <form class="pagination-jump" data-pagination-jump data-base-url="<%- url_for('/') %>" data-page-dir="<%= config.pagination_dir || 'page' %>" data-total-pages="<%= totalPages %>">
+          <label>
+            第
+            <input type="number" min="1" max="<%= totalPages %>" value="<%= currentPage %>" inputmode="numeric" aria-label="要跳转的页码">
+            / <%= totalPages %> 页
+          </label>
+          <button type="submit">跳转</button>
+        </form>
+      </nav>
+    <% } %>
   </div>
   <aside class="section-side">
     <h2><%= sections.featured_title || '精选分类' %></h2>

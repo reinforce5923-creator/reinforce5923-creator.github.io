@@ -26,7 +26,6 @@ sections:
   recent_title: "最近文章"
   archive_link: "全部归档"
   featured_title: "精选分类"
-  recent_limit: 6
 
 featured_categories:
   - "大一的各项基础课程"

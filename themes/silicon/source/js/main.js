@@ -68,6 +68,29 @@
 
   document.querySelectorAll('[data-post-view-counter]').forEach(loadPostCounter);
 
+  document.querySelectorAll('[data-pagination-jump]').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var pageInput = form.querySelector('input[type="number"]');
+      var totalPages = Number(form.getAttribute('data-total-pages'));
+      var targetPage = pageInput ? Number(pageInput.value) : NaN;
+
+      if (!pageInput || !Number.isInteger(targetPage) || targetPage < 1 || targetPage > totalPages) {
+        if (pageInput) {
+          pageInput.setCustomValidity('请输入 1 到 ' + totalPages + ' 之间的页码');
+          pageInput.reportValidity();
+        }
+        return;
+      }
+
+      pageInput.setCustomValidity('');
+      var baseUrl = form.getAttribute('data-base-url') || '/';
+      var pageDir = form.getAttribute('data-page-dir') || 'page';
+      if (baseUrl.charAt(baseUrl.length - 1) !== '/') baseUrl += '/';
+      window.location.href = targetPage === 1 ? baseUrl : baseUrl + pageDir + '/' + targetPage + '/';
+    });
+  });
+
   var pageCounter = document.querySelector('[data-page-view-counter]');
   if (pageCounter) {
     requestCounter('up', counterKey(pageCounter.getAttribute('data-counter-path')))

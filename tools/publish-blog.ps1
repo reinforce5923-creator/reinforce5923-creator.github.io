@@ -105,12 +105,14 @@ function Get-BuiltPostCheck {
   }
   $relativePath = $artifact.FullName.Substring($publicPrefix.Length).Replace('\', '/')
   $relativeUrl = $relativePath.Substring(0, $relativePath.Length - "index.html".Length)
+  $encodedRelativeUrl = (($relativeUrl -split '/') | ForEach-Object { [System.Uri]::EscapeDataString($_) }) -join '/'
 
   [PSCustomObject]@{
     SourcePath = $PostPath
     Title = $Title
     EncodedTitle = $encodedTitle
     RelativeUrl = $relativeUrl
+    EncodedRelativeUrl = $encodedRelativeUrl
   }
 }
 
@@ -149,8 +151,14 @@ if ($LASTEXITCODE -ne 0) {
 $postChecks = @()
 foreach ($postPath in $changedPostFiles) {
   $postTitle = Get-PostTitle $postPath
-  $postChecks += Get-BuiltPostCheck -PostPath $postPath -Title $postTitle
-  Write-Host "已确认本地构建包含文章：《$postTitle》" -ForegroundColor Green
+  $postCheck = Get-BuiltPostCheck -PostPath $postPath -Title $postTitle
+  $localHomepage = Get-Content -LiteralPath (Join-Path $root "public\index.html") -Raw -Encoding UTF8
+  if (-not $localHomepage.Contains($postCheck.EncodedTitle) -or
+      -not $localHomepage.Contains($postCheck.EncodedRelativeUrl)) {
+    throw "文章《$postTitle》没有出现在主页第一页。请确认文章日期是最新日期，并且主页每页文章数配置正确。"
+  }
+  $postChecks += $postCheck
+  Write-Host "已确认文章出现在主页第一页：《$postTitle》" -ForegroundColor Green
 }
 
 Write-Step "2. 检查本地修改"
@@ -252,7 +260,8 @@ for ($attempt = 1; $attempt -le 30; $attempt++) {
     }
 
     foreach ($check in $postChecks) {
-      if (-not $response.Content.Contains($check.EncodedTitle)) {
+      if (-not $response.Content.Contains($check.EncodedTitle) -or
+          -not $response.Content.Contains($check.EncodedRelativeUrl)) {
         throw "公网首页还没有文章《$($check.Title)》"
       }
 
