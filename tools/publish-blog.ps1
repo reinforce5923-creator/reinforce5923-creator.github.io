@@ -52,6 +52,68 @@ function Get-SiteUrl {
   return "https://reinforce5923-creator.github.io"
 }
 
+function Get-ChangedPostFiles {
+  param([string]$GitPath)
+
+  $tracked = @(& $GitPath -c core.quotepath=false diff --name-only --diff-filter=ACMRT HEAD -- source/_posts)
+  $untracked = @(& $GitPath -c core.quotepath=false ls-files --others --exclude-standard -- source/_posts)
+
+  @($tracked + $untracked) |
+    Where-Object { $_ -and $_.EndsWith(".md", [System.StringComparison]::OrdinalIgnoreCase) } |
+    Sort-Object -Unique |
+    ForEach-Object { Join-Path $root $_ }
+}
+
+function Get-PostTitle {
+  param([string]$PostPath)
+
+  $content = Get-Content -LiteralPath $PostPath -Raw -Encoding UTF8
+  if ($content -notmatch '(?m)^title:\s*(.+?)\s*$') {
+    throw "文章缺少 title：$PostPath"
+  }
+
+  $title = $Matches[1].Trim()
+  if (($title.StartsWith('"') -and $title.EndsWith('"')) -or
+      ($title.StartsWith("'") -and $title.EndsWith("'"))) {
+    $title = $title.Substring(1, $title.Length - 2)
+  }
+  return $title
+}
+
+function Get-BuiltPostCheck {
+  param(
+    [string]$PostPath,
+    [string]$Title
+  )
+
+  $encodedTitle = [System.Net.WebUtility]::HtmlEncode($Title)
+  $artifact = Get-ChildItem -LiteralPath (Join-Path $root "public\posts") -Filter index.html -File -Recurse |
+    Where-Object {
+      $html = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8
+      $html -match ("<h1[^>]*>\s*" + [regex]::Escape($encodedTitle) + "\s*</h1>")
+    } |
+    Select-Object -First 1
+
+  if (-not $artifact) {
+    throw "本地构建产物中找不到文章《$Title》。请检查日期、front matter 和 Hexo 配置。"
+  }
+
+  $publicRoot = Join-Path $root "public"
+  $publicPrefix = $publicRoot.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+  if (-not $artifact.FullName.StartsWith($publicPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "构建产物路径不在 public 目录内：$($artifact.FullName)"
+  }
+  $relativePath = $artifact.FullName.Substring($publicPrefix.Length).Replace('\', '/')
+  $relativeUrl = $relativePath.Substring(0, $relativePath.Length - "index.html".Length)
+
+  [PSCustomObject]@{
+    SourcePath = $PostPath
+    Title = $Title
+    EncodedTitle = $encodedTitle
+    RelativeUrl = $relativeUrl
+  }
+}
+
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $root
 
@@ -73,6 +135,7 @@ if ($gh) {
 
 $env:Path = "C:\Program Files\nodejs;C:\Program Files\GitHub CLI;C:\Program Files\Git\cmd;" + $env:Path
 $env:GIT_TERMINAL_PROMPT = "0"
+$changedPostFiles = @(Get-ChangedPostFiles $git)
 
 Write-Host "博客一键发布脚本" -ForegroundColor Green
 Write-Host "项目目录：$root"
@@ -81,6 +144,13 @@ Write-Step "1. 本地构建检查"
 & $npm run build
 if ($LASTEXITCODE -ne 0) {
   throw "构建失败。请先修复上面的报错，再重新运行 publish-blog.bat。"
+}
+
+$postChecks = @()
+foreach ($postPath in $changedPostFiles) {
+  $postTitle = Get-PostTitle $postPath
+  $postChecks += Get-BuiltPostCheck -PostPath $postPath -Title $postTitle
+  Write-Host "已确认本地构建包含文章：《$postTitle》" -ForegroundColor Green
 }
 
 Write-Step "2. 检查本地修改"
@@ -168,20 +238,50 @@ if ($gh) {
   Write-Host "请手动打开：https://github.com/$repo/actions"
 }
 
-Write-Step "6. 验证公网首页"
-$verifyUrl = "$siteUrl/?v=$shortSha"
-try {
-  $response = Invoke-WebRequest -Uri $verifyUrl -UseBasicParsing -TimeoutSec 30 -Headers @{ "Cache-Control" = "no-cache" }
-  if ($response.StatusCode -eq 200) {
-    Write-Host "公网首页可以访问：$siteUrl/" -ForegroundColor Green
-    Write-Host "如果浏览器还显示旧内容，请按 Ctrl + F5 强制刷新。"
-  } else {
-    Write-Host "公网首页返回状态码：$($response.StatusCode)" -ForegroundColor Yellow
+Write-Step "6. 验证公网文章内容"
+$verified = $false
+$lastVerifyError = ""
+
+for ($attempt = 1; $attempt -le 30; $attempt++) {
+  try {
+    $cacheKey = "$shortSha-$attempt"
+    $verifyUrl = "$siteUrl/?v=$cacheKey"
+    $response = Invoke-WebRequest -Uri $verifyUrl -UseBasicParsing -TimeoutSec 30 -Headers @{ "Cache-Control" = "no-cache" }
+    if ($response.StatusCode -ne 200) {
+      throw "公网首页返回状态码 $($response.StatusCode)"
+    }
+
+    foreach ($check in $postChecks) {
+      if (-not $response.Content.Contains($check.EncodedTitle)) {
+        throw "公网首页还没有文章《$($check.Title)》"
+      }
+
+      $postUri = [System.Uri]::new([System.Uri]"$siteUrl/", $check.RelativeUrl)
+      $postUrl = "$($postUri.AbsoluteUri)?v=$cacheKey"
+      $postResponse = Invoke-WebRequest -Uri $postUrl -UseBasicParsing -TimeoutSec 30 -Headers @{ "Cache-Control" = "no-cache" }
+      $titlePattern = "<h1[^>]*>\s*" + [regex]::Escape($check.EncodedTitle) + "\s*</h1>"
+      if ($postResponse.StatusCode -ne 200 -or $postResponse.Content -notmatch $titlePattern) {
+        throw "公网文章页尚未更新：《$($check.Title)》"
+      }
+    }
+
+    $verified = $true
+    break
+  } catch {
+    $lastVerifyError = $_.Exception.Message
+    if ($attempt -lt 30) {
+      Write-Host "公网内容尚未更新（第 $attempt/30 次）：$lastVerifyError"
+      Start-Sleep -Seconds 6
+    }
   }
-} catch {
-  Write-Host "公网验证暂时失败，但代码已经推送。稍等 1-3 分钟后再打开：" -ForegroundColor Yellow
-  Write-Host "$siteUrl/"
 }
+
+if (-not $verified) {
+  throw "公网内容验证失败：$lastVerifyError。代码已推送，请打开 https://github.com/$repo/actions 检查部署。"
+}
+
+Write-Host "公网首页和本次更新的文章页均已验证：$siteUrl/" -ForegroundColor Green
+Write-Host "如果浏览器仍显示旧内容，请按 Ctrl + F5 强制刷新。"
 
 Write-Host ""
 Write-Host "发布流程结束。" -ForegroundColor Green
